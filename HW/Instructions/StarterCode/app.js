@@ -1,7 +1,7 @@
 // Read in samples.json
 // Build init function
 
-function init (i) {
+function init() {
     const BBBD = "samples.json";
     d3.json(BBBD).then(function(sampledata){   
         console.log(sampledata);
@@ -16,10 +16,11 @@ var IDS_chart = sampledata.samples[0].otu_ids;
 
 // get only top 10 otu ids for the plot OTU and reversing it. 
         var OTU_top = ( sampledata.samples[0].otu_ids.slice(0, 10)).reverse();
-        
+
 // get the otu id's to the desired form for the plot
         var OTU_id = OTU_top.map(d => "OTU " + d);
         console.log(`OTU IDS: ${OTU_id}`)
+        
 // get the top 10 labels for the plot
         var labels =  sampledata.samples[0].otu_labels.slice(0,10);
         console.log(`OTU_labels: ${labels}`)
@@ -103,29 +104,29 @@ function getDemoInfo(id) {
         });
     });
 }
-// create the function for the change event
-function optionChanged(id) {
-    init(id);
-    getDemoInfo(id);
-}
+// // create the function for the change event
+// function optionChanged(id) {
+//     init(id);
+//     getDemoInfo(id);
+// }
 
 // create the function for the initial data rendering
 function init() {
 // select dropdown menu 
-    var dropdown = d3.select("#selDataset");
+    let selector = d3.select("#selDataset");
 
  // read the data 
-    d3.json("samples.json").then((data)=> {
+    d3.jsongit("samples.json").then((data)=> {
         console.log(data)
 
-// get the id data to the dropdwown menu
-        data.names.forEach(function(name) {
-            dropdown.append("option").text(name).property("value");
-        });
+// // get the id data to the dropdwown menu
+//         data.names.forEach(function(name) {
+//             dropdown.append("option").text(name).property("value");
+//         });
 
-// call the functions to display the data and the plots to the page
-        init(data.names[0]);
-        getDemoInfo(data.names[0]);
+// // call the functions to display the data and the plots to the page
+//         init(data.names[0]);
+//         getDemoInfo(data.names[0]);
 
 });
 }
