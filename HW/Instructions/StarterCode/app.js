@@ -102,32 +102,34 @@ function getDemoInfo(id) {
         Object.entries(result).forEach((key) => {   
             demographicInfo.append("h5").text(key[0].toUpperCase() + ": " + key[1] + "\n");    
         });
-    });
+
+});
+
 }
 // // create the function for the change event
-// function optionChanged(id) {
-//     init(id);
-//     getDemoInfo(id);
+// function optionChanged() {
+//     init();
+//     getDemoInfo();
 // }
 
 // create the function for the initial data rendering
-function init() {
-// select dropdown menu 
-    let selector = d3.select("#selDataset");
+// function init() {
+//     // select dropdown menu 
+//     var dropdown = d3.select("#selDataset");
 
- // read the data 
-    d3.jsongit("samples.json").then((data)=> {
-        console.log(data)
+//     // read the data 
+//     d3.json("samples.json").then((sdata)=> {
+//         console.log(sdata)
 
-// // get the id data to the dropdwown menu
-//         data.names.forEach(function(name) {
+//         // get the id data to the dropdwown menu
+//         sdata.names.forEach(function(name) {
 //             dropdown.append("option").text(name).property("value");
 //         });
 
-// // call the functions to display the data and the plots to the page
-//         init(data.names[0]);
-//         getDemoInfo(data.names[0]);
-
-});
-}
- init(0);
+//         // call the functions to display the data and the plots to the page
+//         init(sdata.names[0]);
+//         getDemoInfo(sdata.names[0]);
+//     });
+// }
+  
+ init();
