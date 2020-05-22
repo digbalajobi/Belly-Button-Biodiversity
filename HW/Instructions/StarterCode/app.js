@@ -1,135 +1,105 @@
 // Read in samples.json
 // Build init function
-
-function init() {
+function init(i) {
     const BBBD = "samples.json";
     d3.json(BBBD).then(function(sampledata){   
-        console.log(sampledata);
-
-// Variable to be called later for charts
-var IDS_chart = sampledata.samples[0].otu_ids;
-        console.log(IDS_chart)
-        var sampleValues =  sampledata.samples[0].sample_values.slice(0,10).reverse();
+        var testSubNames = sampledata.names
+        var sampleValues = sampledata.samples[i].sample_values;
         console.log(sampleValues)
-        var labels =  sampledata.samples[0].otu_labels.slice(0,10);
+        var labels =  sampledata.samples[i].otu_labels;
         console.log (labels)
-
-// get only top 10 otu ids for the plot OTU and reversing it. 
-        var OTU_top = ( sampledata.samples[0].otu_ids.slice(0, 10)).reverse();
-
-// get the otu id's to the desired form for the plot
+        var OTU_top = sampledata.samples[i].otu_ids;
         var OTU_id = OTU_top.map(d => "OTU " + d);
-        console.log(`OTU IDS: ${OTU_id}`)
-        
+        console.log(OTU_id)
+
+// get the metadata info for the demographic panel
+        var Pmetadata = sampledata.metadata[i];
+        console.log(Pmetadata)
+
+// select dropdown menu 
+        var dropdown = d3.select("#selDataset");
+
+// get the id data to the dropdwown menu
+        for (i in testSubNames) {
+            var newPanelDropdownOption = dropdown.append("option")
+            newPanelDropdownOption.text(testSubNames[i]);
+        }
+        // select demographic panel to put data
+        // empty the demographic info panel each time before getting new id info
+        // grab the necessary demographic data data for the id and append the info to the panel
+        var demPanel = d3.select("#sample-metadata");
+        demPanel.html("");  
+        Object.entries(Pmetadata).forEach(function ([key, value]) {
+            var row = demPanel.append("p");            
+            row.text(`${key.toUpperCase()} :${value}`)               
+        })
+
 // get the top 10 labels for the plot
-        var labels =  sampledata.samples[0].otu_labels.slice(0,10);
-        console.log(`OTU_labels: ${labels}`)
-        var trace = {
-            x: sampleValues,
-            y: OTU_id,
-            text: labels,
-            marker: {
-            color: 'blue'},
-            type:"bar",
-            orientation: "h",
-        };
-// create data variable
-        var data = [trace];
+        var trace = [{
+        x: sampleValues.slice(0,10).reverse(),
+        y: OTU_id,
+        text: labels.slice(0,10).reverse(),
+        orientation: "h",
+        marker: {
+            color: "pink",
+        },
+        type: "bar"
+        }]
 
 // create layout variable to set plots layout
         var layout = {
-            title: "Top 10 OTU",
-            yaxis:{
-                tickmode:"linear",
-            },
+        xaxis:{title: "Test Subject Sample Values"},
+        yaxis:{title: "Test Subject OTU IDs"},
+        title: "Top 10 OTU IDs"
+        }
+        
+// create the bar plot
+    Plotly.newPlot("bar", trace, layout);
+
+// The bubble chart
+        var bubble = {
+        x: OTU_top,
+        y: sampleValues,
+        text: labels,
+        mode: "markers",
+        marker: {
+            size: sampleValues,
+            color: OTU_top
+        },
             margin: {
                 l: 100,
                 r: 100,
                 t: 100,
-                b: 30
-            }
-        };
-
-// create the bar plot
-    Plotly.newPlot("bar", data, layout);
-
-// The bubble chart
-        var trace1 = {
-            x: sampledata.samples[0].otu_ids,
-            y: sampledata.samples[0].sample_values,
-            mode: "markers",
-            marker: {
-                size: sampledata.samples[0].sample_values,
-                color: sampledata.samples[0].otu_ids
-            },
-            text:  sampledata.samples[0].otu_labels
-
+                b: 30 }
         };
 
 // set the layout for the bubble plot
+        var layout_bubble = [bubble];
         var layout_2 = {
-            xaxis:{title: "OTU ID"},
-            height: 600,
-            width: 1000
+        title :"Belly Button Bacteria",
+        xaxis:{title: "OTU ID"},
         };
 
-// creating data variable 
-        var data1 = [trace1];
-
 // create the bubble plot
-    Plotly.newPlot("bubble", data1, layout_2); 
-    
-    });
-}  
-// create the function to get the necessary data
-function getDemoInfo(id) {
-// read the json file to get data
-    d3.json("samples.json").then((data)=> {
-// get the metadata info for the demographic panel
-        var metadata = data.metadata;
+    Plotly.newPlot("bubble", layout_bubble, layout_2); 
 
-        console.log(metadata)
-
-// filter meta data info by id
-       var result = metadata.filter(meta => meta.id.toString() === id)[0];
-// select demographic panel to put data
-       var demographicInfo = d3.select("#sample-metadata");
-        
-// empty the demographic info panel each time before getting new id info
-       demographicInfo.html("");
-
-// grab the necessary demographic data data for the id and append the info to the panel
-        Object.entries(result).forEach((key) => {   
-            demographicInfo.append("h5").text(key[0].toUpperCase() + ": " + key[1] + "\n");    
-        });
-
-});
+    })
 
 }
-// // create the function for the change event
-// function optionChanged() {
-//     init();
-//     getDemoInfo();
-// }
 
-// create the function for the initial data rendering
-// function init() {
-//     // select dropdown menu 
-//     var dropdown = d3.select("#selDataset");
-
-//     // read the data 
-//     d3.json("samples.json").then((sdata)=> {
-//         console.log(sdata)
-
-//         // get the id data to the dropdwown menu
-//         sdata.names.forEach(function(name) {
-//             dropdown.append("option").text(name).property("value");
-//         });
-
-//         // call the functions to display the data and the plots to the page
-//         init(sdata.names[0]);
-//         getDemoInfo(sdata.names[0]);
-//     });
-// }
+// create the function for the change event
+function optionChanged(d) {
+    const BBBD = "samples.json";
+    d3.json(BBBD).then(function(sampledata){   
+    var testSubNames = sampledata.names
+    const isNumber = (element) => element === d;
+    var indx = (testSubNames.findIndex(isNumber));
+    d3.selectAll("td").remove();
+    d3.selectAll("option").remove();
+    var dropdown = d3.select("#selDataset");
+    dropdown.append("option").text(d);
+    init(indx);
+});
+}
   
- init();
+ init(0);
